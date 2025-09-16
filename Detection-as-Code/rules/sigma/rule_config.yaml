@@ -1,0 +1,5 @@
+windows_powershell_encodedcommand:
+  path: rules/sigma/windows_powershell_encodedcommand.yml
+  enabled: true
+  alerting: true
+  severity: high

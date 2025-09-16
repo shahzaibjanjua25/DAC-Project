@@ -1,0 +1,36 @@
+title: Suspicious PowerShell EncodedCommand
+id: 6f0b3f7b-7a2e-4c2a-9c65-6b7b3d5f2d31
+status: experimental
+description: |
+  Rileva esecuzioni di PowerShell/Pwsh con uso di -enc/--encodedCommand
+  e possibile payload Base64. Tattica comune per offuscare comandi.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_proc:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_arg_flag:
+    CommandLine|contains:
+      - ' -enc '
+      - ' -e '
+      - ' --encodedCommand '
+  selection_arg_b64:
+    CommandLine|re: '(?i)([A-Za-z0-9+/]{20,}={0,2})'
+  condition: selection_proc and selection_arg_flag and selection_arg_b64
+fields:
+  - UtcTime
+  - Image
+  - CommandLine
+  - ParentImage
+  - ParentCommandLine
+falsepositives:
+  - Script amministrativi firmati che usano encodedCommand per compatibilità
+level: high
+tags:
+  - attack.execution
+  - attack.t1059.001
